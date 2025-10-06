@@ -13,17 +13,16 @@ jobs:
       - name: Checkout repository  
         uses: actions/checkout@v4  
   
-      - name: Install MongoDB with supercharge/mongodb-github-action  
+      - name: Install MongoDB 8.0 Community  
         uses: supercharge/mongodb-github-action@1.10.0  
         with:  
           mongodb-version: '8.0'  
   
-      - name: Install mongocryptd (community edition)  
+      - name: Install mongocryptd from Enterprise tarball  
         run: |  
-          wget -qO - https://www.mongodb.org/static/pgp/server-8.0.asc | sudo apt-key add -  
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list  
-          sudo apt-get update  
-          sudo apt-get install -y mongodb-org-cryptd  
+          curl -o mongodb-enterprise.tar.gz https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-enterprise-ubuntu2004-8.0.0.tgz  
+          tar -xzf mongodb-enterprise.tar.gz  
+          sudo cp mongodb-linux-x86_64-enterprise-ubuntu2004-8.0.0/bin/mongocryptd /usr/local/bin/  
   
       - name: Start mongocryptd  
         run: |  
@@ -31,10 +30,11 @@ jobs:
   
       - name: Verify MongoDB installation  
         run: |  
-          mongo --version  
-          mongo --eval 'db.runCommand({ connectionStatus: 1 })'  
+          mongosh --version  
+          mongosh --eval 'db.runCommand({ connectionStatus: 1 })'  
   
       - name: Verify mongocryptd is running  
         run: |  
           pgrep mongocryptd  
           ps aux | grep mongocryptd  
+
