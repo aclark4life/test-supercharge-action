@@ -6,30 +6,35 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs:
-  install-mongodb:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Install MongoDB with supercharge/mongodb-github-action
-        uses: supercharge/mongodb-github-action@1.10.0
-        with:
-          mongodb-version: '6.0'
-      - name: Install mongocryptd (community edition)
-        run: |
-          wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-          sudo apt-get update
-          sudo apt-get install -y mongodb-org-cryptd
-      - name: Start mongocryptd
-        run: |
-          nohup mongocryptd --logpath=/tmp/mongocryptd.log &
-      - name: Verify MongoDB installation
-        run: |
-          mongo --version
-          mongo --eval 'db.runCommand({ connectionStatus: 1 })'
-      - name: Verify mongocryptd is running
-        run: |
-          pgrep mongocryptd
-          ps aux | grep mongocryptd
+jobs:  
+  install-mongodb:  
+    runs-on: ubuntu-latest  
+    steps:  
+      - name: Checkout repository  
+        uses: actions/checkout@v4  
+  
+      - name: Install MongoDB with supercharge/mongodb-github-action  
+        uses: supercharge/mongodb-github-action@1.10.0  
+        with:  
+          mongodb-version: '8.0'  
+  
+      - name: Install mongocryptd (community edition)  
+        run: |  
+          wget -qO - https://www.mongodb.org/static/pgp/server-8.0.asc | sudo apt-key add -  
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list  
+          sudo apt-get update  
+          sudo apt-get install -y mongodb-org-cryptd  
+  
+      - name: Start mongocryptd  
+        run: |  
+          nohup mongocryptd --logpath=/tmp/mongocryptd.log &  
+  
+      - name: Verify MongoDB installation  
+        run: |  
+          mongo --version  
+          mongo --eval 'db.runCommand({ connectionStatus: 1 })'  
+  
+      - name: Verify mongocryptd is running  
+        run: |  
+          pgrep mongocryptd  
+          ps aux | grep mongocryptd  
