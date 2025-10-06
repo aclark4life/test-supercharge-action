@@ -27,9 +27,9 @@ jobs:
   
       - name: Install mongocryptd from Enterprise tarball  
         run: |  
-          curl -sSL -o mongodb-enterprise.tgz "https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-ubuntu2204-8.0.0.tgz"  
+          curl -sSL -o mongodb-enterprise.tgz "https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-ubuntu2204-8.0.15.tgz"  
           tar -xzf mongodb-enterprise.tgz  
-          sudo cp mongodb-linux-x86_64-enterprise-ubuntu2204-8.0.0/bin/mongocryptd /usr/local/bin/  
+          sudo cp mongodb-linux-x86_64-enterprise-ubuntu2204-8.0.15/bin/mongocryptd /usr/local/bin/  
   
       - name: Start mongocryptd      
         run: |  
