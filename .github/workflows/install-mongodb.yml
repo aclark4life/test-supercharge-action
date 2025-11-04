@@ -6,47 +6,47 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs:  
-  install-mongodb:      
-    runs-on: ubuntu-latest      
-    steps:      
-      - name: Checkout repository      
-        uses: actions/checkout@v4      
+jobs:
+  install-mongodb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
   
-      - name: Install MongoDB 8.0 Community      
-        uses: supercharge/mongodb-github-action@1.10.0      
-        with:      
-          mongodb-version: '8.0'  
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: '8.2'
   
-      - name: Install mongosh  
-        run: |  
-          wget -q https://downloads.mongodb.com/compass/mongosh-2.2.10-linux-x64.tgz  
-          tar -xzf mongosh-*-linux-x64.tgz  
-          sudo cp mongosh-*-linux-x64/bin/mongosh /usr/local/bin/  
-          mongosh --version  
+      - name: Install mongosh
+        run: |
+          wget -q https://downloads.mongodb.com/compass/mongosh-2.2.10-linux-x64.tgz
+          tar -xzf mongosh-*-linux-x64.tgz
+          sudo cp mongosh-*-linux-x64/bin/mongosh /usr/local/bin/
+          mongosh --version
   
-      - name: Install mongocryptd from Enterprise tarball  
-        run: |  
-          curl -sSL -o mongodb-enterprise.tgz "https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-ubuntu2204-8.0.15.tgz"  
-          tar -xzf mongodb-enterprise.tgz  
-          sudo cp mongodb-linux-x86_64-enterprise-ubuntu2204-8.0.15/bin/mongocryptd /usr/local/bin/  
+      - name: Install mongocryptd from Enterprise tarball
+        run: |
+          curl -sSL -o mongodb-enterprise.tgz "https://downloads.mongodb.com/linux/mongodb-linux-x86_64-enterprise-ubuntu2404-8.2.1.tgz"
+          tar -xzf mongodb-enterprise.tgz
+          sudo cp mongodb-linux-x86_64-enterprise-ubuntu2204-8.2.1/bin/mongocryptd /usr/local/bin/
   
-      - name: Start mongocryptd      
-        run: |  
-          nohup mongocryptd --logpath=/tmp/mongocryptd.log &  
+      - name: Start mongocryptd
+        run: |
+          nohup mongocryptd --logpath=/tmp/mongocryptd.log &
   
-      - name: Verify MongoDB installation      
-        run: |  
-          mongosh --eval 'db.runCommand({ connectionStatus: 1 })'  
+      - name: Verify MongoDB installation
+        run: |
+          mongosh --eval 'db.runCommand({ connectionStatus: 1 })'
   
-      - name: Verify mongocryptd is running      
-        run: |  
-          pgrep mongocryptd  
+      - name: Verify mongocryptd is running
+        run: |
+          pgrep mongocryptd
 
       # 🧩 Install Mongo Crypt Shared Library
       - name: Install Mongo Crypt Shared Library
         run: |
-          curl -sSL -o mongo_crypt_shared_v1.tgz https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.15.tgz
+          curl -sSL -o mongo_crypt_shared_v1.tgz https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.2.1.tgz
           tar -xzf mongo_crypt_shared_v1.tgz
           sudo mkdir -p /usr/local/lib/mongo_crypt_v1
           sudo cp lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
