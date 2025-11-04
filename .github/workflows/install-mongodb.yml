@@ -49,7 +49,7 @@ jobs:
           curl -sSL -o mongo_crypt_shared_v1.tgz https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.15.tgz
           tar -xzf mongo_crypt_shared_v1.tgz
           sudo mkdir -p /usr/local/lib/mongo_crypt_v1
-          sudo cp mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.15/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
+          sudo cp lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
           echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib/mongo_crypt_v1"
 
       - name: Set up Python
