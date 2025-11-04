@@ -81,6 +81,7 @@ jobs:
                       kms_providers={"local": {"key": os.urandom(96)}},
                       key_vault_namespace="encryption.__keyVault",
                       crypt_shared_lib_path=lib_path,
+                      crypt_shared_lib_required=True,
                   ),
                   serverSelectionTimeoutMS=3000,
               )
