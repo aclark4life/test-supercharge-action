@@ -43,3 +43,27 @@ jobs:
         run: |  
           pgrep mongocryptd  
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyMongo
+        run: |
+          python -m pip install --upgrade pip
+          pip install pymongo
+
+      - name: Test PyMongo connection
+        run: |
+          python - <<'PYCODE'
+          from pymongo import MongoClient
+          import sys
+
+          try:
+              client = MongoClient("mongodb://localhost:27017/", serverSelectionTimeoutMS=3000)
+              info = client.server_info()
+              print("✅ Successfully connected to MongoDB:", info.get("version"))
+          except Exception as e:
+              print("❌ Failed to connect to MongoDB:", e)
+              sys.exit(1)
+          PYCODE
