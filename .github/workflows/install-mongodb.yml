@@ -43,29 +43,44 @@ jobs:
         run: |  
           pgrep mongocryptd  
 
+      # 🧩 Install libmongocrypt (Mongo Crypt Shared Library)
+      - name: Install Mongo Crypt Shared Library
+        run: |
+          curl -sSL -o mongo_crypt_shared_v1.tgz https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-ubuntu2204-8.0.15.tgz
+          tar -xzf mongo_crypt_shared_v1.tgz
+          sudo mkdir -p /usr/local/lib/mongo_crypt_v1
+          sudo cp mongo_crypt_shared_v1-linux-x86_64-ubuntu2204-8.0.15/lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
+          echo "✅ Installed libmongocrypt to /usr/local/lib/mongo_crypt_v1"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install PyMongo
+      - name: Install PyMongo with encryption support
         run: |
           python -m pip install --upgrade pip
           pip install 'pymongo[encryption]'
 
-      - name: Test PyMongo connection
+      - name: Test PyMongo connection with encryption
+        env:
+          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
         run: |
           python - <<'PYCODE'
+          import os, sys
           from pymongo import MongoClient
           from pymongo.encryption_options import AutoEncryptionOpts
-          import os
-          import sys
+
+          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+          print(f"🔒 Using libmongocrypt: {lib_path}")
+
           try:
               client = MongoClient(
                   "mongodb://localhost:27017/",
                   auto_encryption_opts=AutoEncryptionOpts(
                       kms_providers={"local": {"key": os.urandom(96)}},
                       key_vault_namespace="encryption.__keyVault",
+                      crypt_shared_lib_path=lib_path,
                   ),
                   serverSelectionTimeoutMS=3000,
               )
