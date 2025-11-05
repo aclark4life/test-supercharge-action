@@ -65,8 +65,9 @@ jobs:
           pip install 'pymongo[encryption]'
 
       - name: Test PyMongo connection with encryption
-        # env:
+        env:
         #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+          LD_LIBRARY_PATH: /usr/local/lib
         run: |
           python - <<'PYCODE'
           import os, sys
@@ -96,8 +97,9 @@ jobs:
           PYCODE
 
       - name: Test Python Tutorial Code with Encryption
-        # env:
+        env:
         #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+          LD_LIBRARY_PATH: /usr/local/lib
         run: |
           python - <<'PYCODE'
           import os, sys
