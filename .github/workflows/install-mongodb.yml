@@ -64,16 +64,15 @@ jobs:
 
       - name: Test PyMongo connection with encryption
         env:
-        #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-          LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
+          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+          # LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
         run: |
           python - <<'PYCODE'
           import os, sys
           from pymongo import MongoClient
           from pymongo.encryption_options import AutoEncryptionOpts
 
-          # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          lib_path = "/usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so"
+          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
           print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
 
           try:
@@ -106,8 +105,7 @@ jobs:
           from pymongo.encryption import ClientEncryption, AutoEncryptionOpts
           from pymongo.errors import EncryptedCollectionError
 
-          # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          lib_path = "/usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so"
+          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
 
           try:
               client = MongoClient(
