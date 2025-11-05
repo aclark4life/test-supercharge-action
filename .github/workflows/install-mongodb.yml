@@ -65,7 +65,6 @@ jobs:
       - name: Test PyMongo connection with encryption
         env:
           LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
-          PYMONGOCRYPT_LIB: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
         run: |
           python - <<'PYCODE'
           import os, sys
@@ -95,8 +94,7 @@ jobs:
 
       - name: Test Python Tutorial Code with Encryption
         env:
-          # LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
-          PYMONGOCRYPT_LIB: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+          LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
         run: |
           python - <<'PYCODE'
           import os, sys
