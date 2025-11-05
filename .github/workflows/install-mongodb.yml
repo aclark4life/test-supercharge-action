@@ -32,6 +32,8 @@ jobs:
           sudo cp mongodb-linux-x86_64-enterprise-ubuntu2404-8.2.1/bin/mongocryptd /usr/local/bin/
   
       - name: Start mongocryptd
+        env:
+          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
         run: |
           nohup mongocryptd --logpath=/tmp/mongocryptd.log &
   
