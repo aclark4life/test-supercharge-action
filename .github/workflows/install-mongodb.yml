@@ -146,7 +146,7 @@ jobs:
               }
               try:
                   collection = client_encryption.create_encrypted_collection(
-                      database, "patient", encrypted_fields, "local"
+                      db, "patient", encrypted_fields, "local"
                   )
                   patient = {
                       "patientName": "Jon Doe",
