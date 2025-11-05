@@ -13,14 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set env vars  
-        run: |  
-          export MONGOCRYPT_SHARED_LIB_PATH=/usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-          echo "MONGOCRYPT_SHARED_LIB_PATH=$MONGOCRYPT_SHARED_LIB_PATH" >> $GITHUB_ENV
-  
       - name: Start MongoDB
-        env:
-          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
         uses: supercharge/mongodb-github-action@1.10.0
         with:
           mongodb-version: '8.2'
@@ -39,8 +32,6 @@ jobs:
           sudo cp mongodb-linux-x86_64-enterprise-ubuntu2404-8.2.1/bin/mongocryptd /usr/local/bin/
   
       - name: Start mongocryptd
-        env:
-          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
         run: |
           nohup mongocryptd --logpath=/tmp/mongocryptd.log &
   
@@ -73,15 +64,14 @@ jobs:
 
       - name: Test PyMongo connection with encryption
         env:
-          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-          # LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
+          LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
         run: |
           python - <<'PYCODE'
           import os, sys
           from pymongo import MongoClient
           from pymongo.encryption_options import AutoEncryptionOpts
 
-          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+          lib_path = os.environ["LD_LIBRARY_PATH"] + "/mongo_crypt_v1.so"
           print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
 
           try:
@@ -104,8 +94,7 @@ jobs:
 
       - name: Test Python Tutorial Code with Encryption
         env:
-          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-          # LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
+          LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
         run: |
           python - <<'PYCODE'
           import os, sys
@@ -114,7 +103,7 @@ jobs:
           from pymongo.encryption import ClientEncryption, AutoEncryptionOpts
           from pymongo.errors import EncryptedCollectionError
 
-          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+          lib_path = os.environ["LD_LIBRARY_PATH"] + "/mongo_crypt_v1.so"
 
           try:
               client = MongoClient(
