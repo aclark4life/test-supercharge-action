@@ -49,8 +49,10 @@ jobs:
           curl -sSL -o mongo_crypt_shared_v1.tgz https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.2.1.tgz
           tar -xzf mongo_crypt_shared_v1.tgz
           sudo mkdir -p /usr/local/lib/mongo_crypt_v1
-          sudo cp lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
-          echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib/mongo_crypt_v1"
+          # sudo cp lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
+          sudo cp lib/mongo_crypt_v1.so /usr/local/lib/
+          # echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib/mongo_crypt_v1"
+          echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -62,39 +64,40 @@ jobs:
           python -m pip install --upgrade pip
           pip install 'pymongo[encryption]'
 
-      # - name: Test PyMongo connection with encryption
-      #   env:
-      #     MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-      #   run: |
-      #     python - <<'PYCODE'
-      #     import os, sys
-      #     from pymongo import MongoClient
-      #     from pymongo.encryption_options import AutoEncryptionOpts
+      - name: Test PyMongo connection with encryption
+        # env:
+        #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+        run: |
+          python - <<'PYCODE'
+          import os, sys
+          from pymongo import MongoClient
+          from pymongo.encryption_options import AutoEncryptionOpts
 
-      #     lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-      #     print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
+          # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+          lib_path = /usr/local/lib/mongo_crypt_v1.so
+          print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
 
-      #     try:
-      #         client = MongoClient(
-      #             "mongodb://localhost:27017/",
-      #             auto_encryption_opts=AutoEncryptionOpts(
-      #                 kms_providers={"local": {"key": os.urandom(96)}},
-      #                 key_vault_namespace="encryption.__keyVault",
-      #                 crypt_shared_lib_path=lib_path,
-      #                 crypt_shared_lib_required=True,
-      #             ),
-      #             serverSelectionTimeoutMS=3000,
-      #         )
-      #         info = client.server_info()
-      #         print("✅ Successfully connected to MongoDB:", info.get("version"))
-      #     except Exception as e:
-      #         print("❌ Failed to connect to MongoDB:", e)
-      #         sys.exit(1)
-      #     PYCODE
+          try:
+              client = MongoClient(
+                  "mongodb://localhost:27017/",
+                  auto_encryption_opts=AutoEncryptionOpts(
+                      kms_providers={"local": {"key": os.urandom(96)}},
+                      key_vault_namespace="encryption.__keyVault",
+                      crypt_shared_lib_path=lib_path,
+                      crypt_shared_lib_required=True,
+                  ),
+                  serverSelectionTimeoutMS=3000,
+              )
+              info = client.server_info()
+              print("✅ Successfully connected to MongoDB:", info.get("version"))
+          except Exception as e:
+              print("❌ Failed to connect to MongoDB:", e)
+              sys.exit(1)
+          PYCODE
 
       - name: Test Python Tutorial Code with Encryption
-        env:
-          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+        # env:
+        #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
         run: |
           python - <<'PYCODE'
           import os, sys
@@ -103,7 +106,8 @@ jobs:
           from pymongo.encryption import ClientEncryption, AutoEncryptionOpts
           from pymongo.errors import EncryptedCollectionError
 
-          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+          # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+          lib_path = /usr/local/lib/mongo_crypt_v1.so
 
           try:
               client = MongoClient(
