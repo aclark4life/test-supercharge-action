@@ -91,3 +91,75 @@ jobs:
               print("❌ Failed to connect to MongoDB:", e)
               sys.exit(1)
           PYCODE
+
+      - name: Test Python Tutorial Code with Encryption
+        env:
+          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+        run: |
+          python - <<'PYCODE'
+          import os, sys
+          from bson.codec_options import CodecOptions
+          from pymongo import MongoClient
+          from pymongo.encryption import ClientEncryption, AutoEncryptionOpts
+          from pymongo.errors import EncryptedCollectionError
+
+          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+
+          try:
+              client = MongoClient(
+                  "mongodb://localhost:27017/",
+                  auto_encryption_opts=AutoEncryptionOpts(
+                      kms_providers={"local": {"key": os.urandom(96)}},
+                      key_vault_namespace="encryption.__keyVault",
+                      crypt_shared_lib_path=lib_path,
+                      crypt_shared_lib_required=True,
+                  ),
+                  serverSelectionTimeoutMS=3000,
+              )
+              codec_options = CodecOptions()
+              client_encryption = ClientEncryption(
+                  client.options.auto_encryption_opts._kms_providers,
+                  client.options.auto_encryption_opts._key_vault_namespace,
+                  client,
+                  codec_options,
+              )
+              client.drop_database("medicalRecords")
+              db = client["medicalRecords"]
+              encrypted_fields = {
+                  "fields": [
+                      {
+                          "path": "patientRecord.ssn",
+                          "bsonType": "string",
+                          "queries": [{"queryType": "equality"}],
+                      },
+                      {
+                          "path": "patientRecord.billing",
+                          "bsonType": "object",
+                      },
+                  ]
+              }
+              try:
+                  collection = client_encryption.create_encrypted_collection(
+                      database, "patient", encrypted_fields, "local"
+                  )
+                  patient = {
+                      "patientName": "Jon Doe",
+                      "patientId": 12345678,
+                      "patientRecord": {
+                          "ssn": "987-65-4320",
+                          "billing": {
+                              "type": "Visa",
+                              "number": "4111111111111111",
+                          },
+                          "billAmount": 1500,
+                      },
+                  }
+                  collection = client[DB_NAME][COLLECTION_NAME]
+                  collection.insert_one(patient)
+                  print(collection.find_one({"patientRecord.ssn": "987-65-4320"}))
+              except EncryptedCollectionError as e:
+                  print(f"Encrypted collection error: {e}")
+          except Exception as e:
+              print("❌ Failed to connect to MongoDB:", e)
+              sys.exit(1)
+          PYCODE
