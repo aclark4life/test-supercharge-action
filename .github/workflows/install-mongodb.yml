@@ -12,6 +12,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set env vars  
+        run: |  
+          export MONGOCRYPT_SHARED_LIB_PATH=/usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+          echo "MONGOCRYPT_SHARED_LIB_PATH=$MONGOCRYPT_SHARED_LIB_PATH" >> $GITHUB_ENV
   
       - name: Start MongoDB
         env:
