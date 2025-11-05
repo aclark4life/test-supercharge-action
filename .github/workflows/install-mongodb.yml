@@ -74,7 +74,7 @@ jobs:
           from pymongo.encryption_options import AutoEncryptionOpts
 
           # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          lib_path = /usr/local/lib/mongo_crypt_v1.so
+          lib_path = "/usr/local/lib/mongo_crypt_v1.so"
           print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
 
           try:
@@ -107,7 +107,7 @@ jobs:
           from pymongo.errors import EncryptedCollectionError
 
           # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          lib_path = /usr/local/lib/mongo_crypt_v1.so
+          lib_path = "/usr/local/lib/mongo_crypt_v1.so"
 
           try:
               client = MongoClient(
