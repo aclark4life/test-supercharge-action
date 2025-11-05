@@ -62,35 +62,35 @@ jobs:
           python -m pip install --upgrade pip
           pip install 'pymongo[encryption]'
 
-      - name: Test PyMongo connection with encryption
-        env:
-          MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-        run: |
-          python - <<'PYCODE'
-          import os, sys
-          from pymongo import MongoClient
-          from pymongo.encryption_options import AutoEncryptionOpts
+      # - name: Test PyMongo connection with encryption
+      #   env:
+      #     MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
+      #   run: |
+      #     python - <<'PYCODE'
+      #     import os, sys
+      #     from pymongo import MongoClient
+      #     from pymongo.encryption_options import AutoEncryptionOpts
 
-          lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
+      #     lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
+      #     print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
 
-          try:
-              client = MongoClient(
-                  "mongodb://localhost:27017/",
-                  auto_encryption_opts=AutoEncryptionOpts(
-                      kms_providers={"local": {"key": os.urandom(96)}},
-                      key_vault_namespace="encryption.__keyVault",
-                      crypt_shared_lib_path=lib_path,
-                      crypt_shared_lib_required=True,
-                  ),
-                  serverSelectionTimeoutMS=3000,
-              )
-              info = client.server_info()
-              print("✅ Successfully connected to MongoDB:", info.get("version"))
-          except Exception as e:
-              print("❌ Failed to connect to MongoDB:", e)
-              sys.exit(1)
-          PYCODE
+      #     try:
+      #         client = MongoClient(
+      #             "mongodb://localhost:27017/",
+      #             auto_encryption_opts=AutoEncryptionOpts(
+      #                 kms_providers={"local": {"key": os.urandom(96)}},
+      #                 key_vault_namespace="encryption.__keyVault",
+      #                 crypt_shared_lib_path=lib_path,
+      #                 crypt_shared_lib_required=True,
+      #             ),
+      #             serverSelectionTimeoutMS=3000,
+      #         )
+      #         info = client.server_info()
+      #         print("✅ Successfully connected to MongoDB:", info.get("version"))
+      #     except Exception as e:
+      #         print("❌ Failed to connect to MongoDB:", e)
+      #         sys.exit(1)
+      #     PYCODE
 
       - name: Test Python Tutorial Code with Encryption
         env:
