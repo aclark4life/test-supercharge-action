@@ -49,10 +49,8 @@ jobs:
           curl -sSL -o mongo_crypt_shared_v1.tgz https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.2.1.tgz
           tar -xzf mongo_crypt_shared_v1.tgz
           sudo mkdir -p /usr/local/lib/mongo_crypt_v1
-          # sudo cp lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
-          sudo cp lib/mongo_crypt_v1.so /usr/local/lib/
-          # echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib/mongo_crypt_v1"
-          echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib"
+          sudo cp lib/mongo_crypt_v1.so /usr/local/lib/mongo_crypt_v1/
+          echo "✅ Installed Mongo Crypt Shared Library to /usr/local/lib/mongo_crypt_v1"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -67,7 +65,7 @@ jobs:
       - name: Test PyMongo connection with encryption
         env:
         #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-          LD_LIBRARY_PATH: /usr/local/lib
+          LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
         run: |
           python - <<'PYCODE'
           import os, sys
@@ -75,7 +73,7 @@ jobs:
           from pymongo.encryption_options import AutoEncryptionOpts
 
           # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          lib_path = "/usr/local/lib/mongo_crypt_v1.so"
+          lib_path = "/usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so"
           print(f"🔒 Using Mongo Crypt Shared Library: {lib_path}")
 
           try:
@@ -99,7 +97,7 @@ jobs:
       - name: Test Python Tutorial Code with Encryption
         env:
         #   MONGOCRYPT_SHARED_LIB_PATH: /usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so
-          LD_LIBRARY_PATH: /usr/local/lib
+          LD_LIBRARY_PATH: /usr/local/lib/mongo_crypt_v1/
         run: |
           python - <<'PYCODE'
           import os, sys
@@ -109,7 +107,7 @@ jobs:
           from pymongo.errors import EncryptedCollectionError
 
           # lib_path = os.environ["MONGOCRYPT_SHARED_LIB_PATH"]
-          lib_path = "/usr/local/lib/mongo_crypt_v1.so"
+          lib_path = "/usr/local/lib/mongo_crypt_v1/mongo_crypt_v1.so"
 
           try:
               client = MongoClient(
