@@ -1,0 +1,7 @@
+tasks:  
+  - name: hello-world  
+    commands:  
+      - command: shell.exec  
+        params:  
+          script: |  
+            echo "Hello, World!"  
